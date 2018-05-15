@@ -1,25 +1,25 @@
 #PYTHON
-import Queue
+from queue import Queue
 import time
 
 #PROJECT
-from .events import (
+from events import (
     MarketEvent,
     SignalEvent,
     OrderEvent,
     FillEvent
 )
-from .data import HistoricCSVDataHandler
-from .strategy import BuyAndHoldStrategy
-from .portfolio import Portfolio
-from .broker import ExecutionHandler
+from data import HistoricCSVDataHandler
+from strategy import BuyAndHoldStrategy
+from portfolio import BacktestPortfolio
+from broker import BacktestBroker
 
 #MODULE
-event_queue = Queue.Queue()
-data = HistoricCSVDataHandler()
-strategy = BuyAndHoldStrategy()
-portfolio = Portfolio()
-broker = ExecutionHandler()
+event_queue = Queue()
+data = HistoricCSVDataHandler(event_queue, ["AAPL", "BRK-B", "CVX", "KO"])
+strategy = BuyAndHoldStrategy(data, event_queue)
+portfolio = BacktestPortfolio(event_queue, data, "2015-01-01", 10000)
+broker = BacktestBroker(event_queue)
 
 while True:
     if data.continue_backtest is True:

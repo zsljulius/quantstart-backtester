@@ -6,7 +6,7 @@ from abc import (
 from datetime import date
 
 #PROJECT
-from .events import (
+from events import (
     OrderEvent,
     FillEvent
 )

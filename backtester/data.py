@@ -1,6 +1,6 @@
 #PYTHON
 from abc import (
-    ABCMeta,
+    ABC,
     abstractmethod
 )
 from datetime import datetime
@@ -17,7 +17,7 @@ import pandas
 from events import MarketEvent
 
 
-class DataMetaclass(metaclass=ABCMeta):
+class DataMetaclass(ABC):
     @abstractmethod
     def get_latest_data(
         self,
@@ -80,14 +80,14 @@ class HistoricCSVDataHandler(DataMetaclass):
 
             #unionize index
             if combined_index is None:
-                combined_index = self.symbol_data[s].index
+                combined_index = self.symbol_data[symbol].index
             else:
                 combined_index.union(self.symbol_data[symbol].index)
 
         for symbol in self.symbol_list:
             #iterrows() creates a generator
             self.symbol_data[symbol] = self.symbol_data[symbol].reindex(
-                reindex=combined_index,
+                combined_index,
                 method='pad'
             ).iterrows()
 
@@ -95,7 +95,7 @@ class HistoricCSVDataHandler(DataMetaclass):
         self,
         symbol
     ):
-        for row in self.symbol_list[symbol]:
+        for row in self.symbol_data[symbol]:
             yield tuple([
                 symbol,
                 datetime.strptime(
@@ -112,21 +112,24 @@ class HistoricCSVDataHandler(DataMetaclass):
     def get_latest_data(
         self,
         symbol,
-        quantity
+        N=1
     ):
         try:
-            return self.latest_symbol_data[symbol][-quantity:]
+            return self.latest_symbol_data[symbol][-N:]
         except KeyError:
             print('{symbol} is not a valid symbol'.format(symbol=symbol))
 
     def update_latest_data(self):
         for symbol in self.symbol_list:
             try:
-                data = self.new_data_generator(symbol).next()
+                data = next(self.new_data_generator(symbol))
             except:
                 self.continue_backtest = False
-
-            if data is not None and len(data) > 0:
-                self.latest_symbol_data[symbol].append(data)
+            else:
+                if data is not None and len(data) > 0:
+                    self.latest_symbol_data[symbol].append(data)
 
         self.event_queue.put(MarketEvent())
+
+    def update_data(self):
+        return

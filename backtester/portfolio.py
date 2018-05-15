@@ -4,13 +4,14 @@ from abc import (
     abstractmethod
 )
 from math import copysign
-
+import pandas as pd
 #PROJECT
-from .events import (
+from events import (
     SignalEvent,
-    OrderEvent
+    OrderEvent,
+    FillEvent
 )
-from .performance import (
+from performance import (
     create_sharpe_ratio,
     create_drawdowns
 )
@@ -115,7 +116,7 @@ class BacktestPortfolio(PortfolioMetaclass):
             self.update_holdings_post_fill(event)
 
     def create_order_event(self, event):
-        if isinstance(event, SignalEvent)
+        if isinstance(event, SignalEvent):
             direction = 'BUY' if event.signal_type == 'LONG' else 'SELL'
             return OrderEvent(
                 event.symbol,
@@ -129,7 +130,7 @@ class BacktestPortfolio(PortfolioMetaclass):
             self.event_queue.put(self.create_order_event(event))
 
     def calculate_equity_curve_dataframe(self):
-        curve = pandas.DataFrame(self.all_holdings)
+        curve = pd.DataFrame(self.all_holdings)
         curve.set_index('datestamp', inplace=True)
         curve['returns'] = curve['total'].pct_change()
         curve['equity_curve'] = (1 + curve['returns']).cumprod()

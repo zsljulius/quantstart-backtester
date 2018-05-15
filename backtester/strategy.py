@@ -1,17 +1,17 @@
 #PYTHON
 from abc import (
-    ABCMeta,
+    ABC,
     abstractmethod
 )
 
 #PROJECT
-from event import (
+from events import (
     MarketEvent,
     SignalEvent
 )
 
 
-class StrategyMetaclass(metaclass=ABCMeta):
+class StrategyMetaclass(ABC):
     @abstractmethod
     def calculate_signals(self):
         raise NotImplementedError
@@ -23,10 +23,10 @@ class BuyAndHoldStrategy(StrategyMetaclass):
         data,
         event_queue
     ):
-    self.data = data
-    self.symbol_list = self.data.symbol_list
-    self.event_queue = event_queue
-    self.bought = {symbol: False for symbol in self.symbol_list}
+        self.data = data
+        self.symbol_list = self.data.symbol_list
+        self.event_queue = event_queue
+        self.bought = {symbol: False for symbol in self.symbol_list}
 
     def calculate_signals(
         self,
