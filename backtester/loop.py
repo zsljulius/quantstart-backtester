@@ -30,7 +30,7 @@ while True:
     while True:
         try:
             event = event_queue.get(block=False)
-        except Queue.Empty:
+        except:
             break
 
         if event is not None:
@@ -43,5 +43,4 @@ while True:
                 broker.execute_order(event)
             elif isinstance(event, FillEvent):
                 portfolio.update_fill(event)
-
-    time.sleep(10*60)
+portfolio

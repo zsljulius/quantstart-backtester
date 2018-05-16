@@ -43,10 +43,12 @@ class BacktestPortfolio(PortfolioMetaclass):
 
         self.symbol_list = self.data.symbol_list
 
-        self.all_positions = self.calculate_all_positions()
+        self.all_positions = []
+        self.all_positions.append(self.calculate_all_positions())
         self.current_positions = {symbol: 0 for symbol in self.symbol_list}
 
-        self.all_holdings = self.calculate_all_holdings()
+        self.all_holdings = []
+        self.all_positions.append(self.calculate_all_holdings())
         self.current_holdings = self.calculate_current_holdings()
 
     def calculate_all_positions(self):
@@ -71,7 +73,7 @@ class BacktestPortfolio(PortfolioMetaclass):
 
     def update_timeindex(self, event):
         data = {
-            symbol: self.data.get_latest(data, symbol)
+            symbol: self.data.get_latest_data(symbol)
             for symbol in self.symbol_list
         }
         datestamp = data[self.symbol_list[0]][0][1]

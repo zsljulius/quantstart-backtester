@@ -55,7 +55,7 @@ class FillEvent(AbstractEvent):
         quantity,
         direction,
         fill_cost,
-        commission=None
+        commission=0
     ):
         """Initializes a FillEvent
 

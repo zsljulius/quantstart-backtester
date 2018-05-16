@@ -9,7 +9,7 @@ from os.path import (
     join,
     realpath
 )
-
+from collections import defaultdict
 #PACKAGES
 import pandas
 
@@ -41,7 +41,7 @@ class HistoricCSVDataHandler(DataMetaclass):
         self.symbol_list = symbol_list
 
         self.symbol_data = {}
-        self.latest_symbol_data = {}
+        self.latest_symbol_data = defaultdict(list)
         self.continue_backtest = True
 
         self.file_type = 'csv'
@@ -99,14 +99,14 @@ class HistoricCSVDataHandler(DataMetaclass):
             yield tuple([
                 symbol,
                 datetime.strptime(
-                    row['datestamp'],
+                    row[0],
                     '%m/%d/%y'
                 ).date(),
-                row['open'],
-                row['high'],
-                row['low'],
-                row['volume'],
-                row['adj_close']
+                row[1]['open'],
+                row[1]['high'],
+                row[1]['low'],
+                row[1]['volume'],
+                row[1]['adj_close']
             ])
 
     def get_latest_data(
@@ -123,7 +123,7 @@ class HistoricCSVDataHandler(DataMetaclass):
         for symbol in self.symbol_list:
             try:
                 data = next(self.new_data_generator(symbol))
-            except:
+            except Exception as e:
                 self.continue_backtest = False
             else:
                 if data is not None and len(data) > 0:
